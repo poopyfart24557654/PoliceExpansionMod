@@ -17,9 +17,15 @@ jobs:
         with:
           dotnet-version: '6.0.x'
 
+      - name: List files
+        shell: powershell
+        run: Get-ChildItem -Recurse -Filter "*.csproj"
+
       - name: Replace csproj with NuGet version
         shell: powershell
         run: |
+          $path = (Get-ChildItem -Recurse -Filter "PoliceExpansionMod.csproj" | Select-Object -First 1).FullName
+          Write-Host "Found csproj at: $path"
           $csproj = @"
           <Project Sdk="Microsoft.NET.Sdk">
             <PropertyGroup>
@@ -38,20 +44,24 @@ jobs:
             </ItemGroup>
           </Project>
           "@
-          Set-Content -Path "PoliceExpansionMod\PoliceExpansionMod.csproj" -Value $csproj
+          Set-Content -Path $path -Value $csproj
           Write-Host "csproj replaced."
 
       - name: Restore
         shell: powershell
-        run: dotnet restore PoliceExpansionMod\PoliceExpansionMod.csproj
+        run: |
+          $path = (Get-ChildItem -Recurse -Filter "PoliceExpansionMod.csproj" | Select-Object -First 1).FullName
+          dotnet restore $path
 
       - name: Build
         shell: powershell
-        run: dotnet build PoliceExpansionMod\PoliceExpansionMod.csproj --configuration Release --no-restore /p:TreatWarningsAsErrors=false
+        run: |
+          $path = (Get-ChildItem -Recurse -Filter "PoliceExpansionMod.csproj" | Select-Object -First 1).FullName
+          dotnet build $path --configuration Release --no-restore /p:TreatWarningsAsErrors=false
 
       - name: Upload DLL
         uses: actions/upload-artifact@v4
         with:
           name: PoliceExpansionMod-DLL
-          path: "**\\bin\\**\\PoliceExpansionMod.dll"
+          path: "**/bin/**/PoliceExpansionMod.dll"
           if-no-files-found: warn
