@@ -1,0 +1,57 @@
+name: Build PoliceExpansionMod
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Replace csproj with NuGet version
+        shell: powershell
+        run: |
+          $csproj = @"
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup>
+              <TargetFramework>net6.0</TargetFramework>
+              <AssemblyName>PoliceExpansionMod</AssemblyName>
+              <RootNamespace>PoliceExpansionMod</RootNamespace>
+              <Nullable>enable</Nullable>
+              <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+              <NoWarn>0436;1591;MSB3277;CS0246;CS0234</NoWarn>
+            </PropertyGroup>
+            <ItemGroup>
+              <PackageReference Include="LavaGang.MelonLoader" Version="0.6.1" />
+              <PackageReference Include="HarmonyX" Version="2.10.1" />
+              <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+              <PackageReference Include="UnityEngine.Modules" Version="2021.3.33" />
+            </ItemGroup>
+          </Project>
+          "@
+          Set-Content -Path "PoliceExpansionMod\PoliceExpansionMod.csproj" -Value $csproj
+          Write-Host "csproj replaced."
+
+      - name: Restore
+        shell: powershell
+        run: dotnet restore PoliceExpansionMod\PoliceExpansionMod.csproj
+
+      - name: Build
+        shell: powershell
+        run: dotnet build PoliceExpansionMod\PoliceExpansionMod.csproj --configuration Release --no-restore /p:TreatWarningsAsErrors=false
+
+      - name: Upload DLL
+        uses: actions/upload-artifact@v4
+        with:
+          name: PoliceExpansionMod-DLL
+          path: "**\\bin\\**\\PoliceExpansionMod.dll"
+          if-no-files-found: warn
