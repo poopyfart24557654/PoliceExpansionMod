@@ -1,0 +1,95 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>PoliceExpansionMod</AssemblyName>
+    <RootNamespace>PoliceExpansionMod</RootNamespace>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <!-- ── MelonLoader references ────────────────────────────────────
+       Point these at your Schedule I installation folder.
+       Default Steam path shown below — update if yours differs.
+  ──────────────────────────────────────────────────────────────── -->
+  <PropertyGroup>
+    <ScheduleIPath>C:\Program Files (x86)\Steam\steamapps\common\Schedule I</ScheduleIPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- MelonLoader core -->
+    <Reference Include="MelonLoader">
+      <HintPath>$(ScheduleIPath)\MelonLoader\MelonLoader.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <!-- Unity -->
+    <Reference Include="UnityEngine">
+      <HintPath>$(ScheduleIPath)\Schedule I_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(ScheduleIPath)\Schedule I_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <!-- Harmony (bundled with MelonLoader) -->
+    <Reference Include="HarmonyLib">
+      <HintPath>$(ScheduleIPath)\MelonLoader\net6\HarmonyLib.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <!-- Newtonsoft.Json (bundled with MelonLoader) -->
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(ScheduleIPath)\MelonLoader\net6\Newtonsoft.Json.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <!-- IL2Cpp Interop -->
+    <Reference Include="Il2CppInterop.Runtime">
+      <HintPath>$(ScheduleIPath)\MelonLoader\net6\Il2CppInterop.Runtime.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <!-- Schedule I game assemblies (real class names confirmed from WareHouseAlwaysOpen.dll) -->
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(ScheduleIPath)\MelonLoader\Il2CppAssemblies\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2CppScheduleOne.Map">
+      <HintPath>$(ScheduleIPath)\MelonLoader\Il2CppAssemblies\Il2CppScheduleOne.Map.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2CppScheduleOne.Doors">
+      <HintPath>$(ScheduleIPath)\MelonLoader\Il2CppAssemblies\Il2CppScheduleOne.Doors.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2CppScheduleOne.Interaction">
+      <HintPath>$(ScheduleIPath)\MelonLoader\Il2CppAssemblies\Il2CppScheduleOne.Interaction.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2CppScheduleOne.Quests">
+      <HintPath>$(ScheduleIPath)\MelonLoader\Il2CppAssemblies\Il2CppScheduleOne.Quests.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2CppScheduleOne.Levelling">
+      <HintPath>$(ScheduleIPath)\MelonLoader\Il2CppAssemblies\Il2CppScheduleOne.Levelling.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2CppScheduleOne.DevUtilities">
+      <HintPath>$(ScheduleIPath)\MelonLoader\Il2CppAssemblies\Il2CppScheduleOne.DevUtilities.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Copy built DLL to the Mods folder automatically -->
+  <Target Name="CopyToMods" AfterTargets="Build">
+    <Copy
+      SourceFiles="$(OutputPath)$(AssemblyName).dll"
+      DestinationFolder="$(ScheduleIPath)\Mods"
+      SkipUnchangedFiles="true" />
+    <Message Text="✓ Copied $(AssemblyName).dll → $(ScheduleIPath)\Mods" Importance="high" />
+  </Target>
+
+</Project>
